@@ -1,5 +1,6 @@
 import genanki
 import random
+import os
 
 def create_flashcards (list_image_url, list_sentence, list_translation, list_audio, n_flashcard):
   #cria conjunto de flashcards
@@ -45,23 +46,31 @@ def create_deck (deck_name, n_flashcard):
   return my_deck, note_model
 
 
-def export_to_anki (deck_name, list_image_url, list_sentence, list_translation,  list_audio, n_flashcard):
+def export_to_anki(deck_name, list_image_url, list_sentence, list_translation, list_audio, n_flashcard):
+    # Create the deck
+    my_deck, note_model = create_deck(deck_name, n_flashcard)
 
-  #Crie o deck
-  my_deck, note_model = create_deck (deck_name, n_flashcard)
-  # Adicione note model ao deck
-  my_deck.add_model(note_model)
+    # Add note model to the deck
+    my_deck.add_model(note_model)
 
-  # Crie e adicione os flashcards ao deck
-  my_flashcards = create_flashcards(list_image_url, list_sentence, list_translation, list_audio, n_flashcard)
-  for flashcard in my_flashcards:
-      my_note = genanki.Note(
-          model=note_model,
-          fields=[flashcard['question'], flashcard['answer']]
-      )
-      my_deck.add_note(my_note)
+    # Create and add the flashcards to the deck
+    my_flashcards = create_flashcards(list_image_url, list_sentence, list_translation, list_audio, n_flashcard)
+    for flashcard in my_flashcards:
+        my_note = genanki.Note(
+            model=note_model,
+            fields=[flashcard['question'], flashcard['answer']]
+        )
+        my_deck.add_note(my_note)
 
-  # Exporta o deck como um .apkg
-  my_package = genanki.Package(my_deck)
-  my_package.media_files = ['audio1.ogg', 'audio2.ogg']
-  my_package.write_to_file(f'{deck_name}.apkg')
+    # Use list_audio for the media files
+    my_package = genanki.Package(my_deck)
+    my_package.media_files = list_audio
+
+    # Define the path for the .apkg file
+    file_path = os.path.join(os.getcwd(), f'{deck_name}.apkg')
+
+    # Save the .apkg file to the path
+    my_package.write_to_file(file_path)
+
+    # Return the path of the generated file
+    return file_path
