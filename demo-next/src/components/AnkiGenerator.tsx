@@ -1,7 +1,7 @@
 // src/components/AnkiGenerator.tsx
-declare module "../lib/genanki";
+declare module "../lib/genanki.js";
 import React, { useEffect } from "react";
-import { Model, Deck, Package } from "../lib/genanki";
+import { Model, Deck, Package } from "../lib/genanki.js";
 import initSqlJs from "sql.js";
 
 // Declare global classes so TypeScript recognizes them
