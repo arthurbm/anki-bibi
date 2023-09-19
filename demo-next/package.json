@@ -9,11 +9,17 @@
     "lint": "next lint"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.5",
+    "@types/jszip": "^3.4.1",
     "@types/node": "20.6.2",
     "@types/react": "^18.2.22",
+    "@types/sql.js": "^1.4.4",
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "next": "^13.5.1"
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
+    "next": "^13.5.1",
+    "sql.js": "^1.8.0"
   }
 }

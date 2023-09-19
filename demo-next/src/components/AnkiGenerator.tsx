@@ -1,7 +1,8 @@
 // src/components/AnkiGenerator.tsx
-declare module '../lib/genanki';
-import React from "react";
+declare module "../lib/genanki";
+import React, { useEffect } from "react";
 import { Model, Deck, Package } from "../lib/genanki";
+import initSqlJs from "sql.js";
 
 // Declare global classes so TypeScript recognizes them
 // declare const Model: any;
@@ -9,6 +10,22 @@ import { Model, Deck, Package } from "../lib/genanki";
 // declare const Package: any;
 
 const AnkiGenerator: React.FC = () => {
+  useEffect(() => {
+    initSqlJs({
+      // Fetch sql.js wasm file from CDN
+      // This way, we don't need to deal with webpack
+      locateFile: (file) => `https://sql.js.org/dist/${file}`,
+    })
+      .then((SQL) => {
+        (window as any).SQL = SQL;
+        console.log("SQL.js initialized");
+        console.log(SQL);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   const generateDeck = () => {
     try {
       const m = new Model({
@@ -38,7 +55,7 @@ const AnkiGenerator: React.FC = () => {
 
       const p = new Package();
       p.addDeck(d);
-      console.log(p)
+      console.log(p);
       p.writeToFile("deck.apkg");
     } catch (error) {
       console.log(error);

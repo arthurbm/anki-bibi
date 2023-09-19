@@ -6,8 +6,8 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Component {...pageProps} />
-      <Script type='module' strategy='beforeInteractive' src="/src/lib/sql.js" />
-      <Script type='module' strategy='beforeInteractive' src="/src/lib/genanki.js" />
+      {/* <Script type='module' strategy='afterInteractive' src="/src/lib/sql.js" />
+      <Script type='module' strategy='afterInteractive' src="/src/lib/genanki.js" /> */}
     </>
   )
 }
