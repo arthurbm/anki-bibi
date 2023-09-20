@@ -1,13 +1,9 @@
 // src/components/AnkiGenerator.tsx
 declare module "../lib/genanki.js";
 import React, { useEffect } from "react";
-import { Person, Model, Deck, Package } from "../lib/genanki.js";
+import { Model, Deck, Package } from "../lib/genanki.js";
 import initSqlJs from "sql.js";
-
-// Declare global classes so TypeScript recognizes them
-// declare const Model: any;
-// declare const Deck: any;
-// declare const Package: any;
+import { FlashcardGenerator } from "./flashcardGenerator.js";
 
 const AnkiGenerator: React.FC = () => {
   useEffect(() => {
@@ -28,39 +24,37 @@ const AnkiGenerator: React.FC = () => {
 
   const generateDeck = () => {
     try {
-      const m = new Model({
-        name: "Basic (and reversed card)",
-        id: "1543634829843",
-        flds: [{ name: "Front" }, { name: "Back" }],
-        req: [
-          [0, "all", [0]],
-          [1, "all", [1]],
-        ],
-        tmpls: [
-          {
-            name: "Card 1",
-            qfmt: "{{Front}}",
-            afmt: "{{FrontSide}}\n\n<hr id=answer>\n\n{{Back}}",
-          },
-          {
-            name: "Card 2",
-            qfmt: "{{Back}}",
-            afmt: "{{FrontSide}}\n\n<hr id=answer>\n\n{{Front}}",
-          },
-        ],
-      });
-
-      const d = new Deck(1276438724672, "Test Deck");
-      d.addNote(m.note(["this is front", "this is back"]));
-
-      const p = new Package();
-      p.addDeck(d);
-      console.log(p);
-      p.writeToFile("deck.apkg");
+      const flashcardGen = new FlashcardGenerator();
+  
+      // Using the provided mock data.
+      const listImageUrl = [
+        "https://cdn2.fabbon.com/uploads/article/image/1037/best-layered-haircuts.jpg",
+        "https://m.media-amazon.com/images/G/32/social_share/amazon_logo._CB633267191_.png"
+      ];
+      const listSentence = [
+        "I need to cut my hair!",
+        "I love shopping on Amazon!"
+      ];
+      const listTranslation = [
+        "Eu preciso cortar meu cabelo!",
+        "Eu amo comprar na Amazon!"
+      ];
+      // I'm using placeholders for the audio URLs. You should replace these with actual URLs.
+      const listAudio = [
+        "path_or_url_to_audio1.ogg",
+        "path_or_url_to_audio2.ogg"
+      ];
+      const deckName = "deck_audio_teste14";
+      const nFlashcard = 2;
+  
+      flashcardGen.exportToAnki(deckName, listImageUrl, listSentence, listTranslation, listAudio, nFlashcard);
+  
+      console.log("Deck generated successfully!");
     } catch (error) {
       console.log(error);
     }
   };
+  
 
   return (
     <div>
