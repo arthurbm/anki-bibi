@@ -8,6 +8,8 @@ module.exports = {
   webpack: (config, { isServer, webpack }) => {
     if (!isServer) {
       config.resolve.fallback.fs = false;
+    } else {
+      config.externals = ['busboy', ...config.externals];
     }
 
     return config;

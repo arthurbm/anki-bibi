@@ -639,4 +639,4 @@ INSERT INTO col VALUES(
 );
 `;
 
-export { Model, Deck, Package, Person }
+export { Model, Deck, Package }

@@ -19,9 +19,6 @@ form.append('list_audio', fs.createReadStream('audio2.ogg'));
 
 axios
   .post('http://localhost:5000/converter', form, {
-    headers: {
-      ...form.getHeaders(),
-    },
     responseType: 'arraybuffer', // for receiving the file as a binary stream
   })
   .then((response) => {

@@ -1,63 +1,87 @@
 // src/components/AnkiGenerator.tsx
-declare module "../lib/genanki.js";
-import React, { useEffect } from "react";
-import { Model, Deck, Package } from "../lib/genanki.js";
+import axios from "axios";
+import React, { useEffect, useRef } from "react";
 import initSqlJs from "sql.js";
-import { FlashcardGenerator } from "./flashcardGenerator.js";
 
 const AnkiGenerator: React.FC = () => {
+  const audioInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     initSqlJs({
-      // Fetch sql.js wasm file from CDN
-      // This way, we don't need to deal with webpack
       locateFile: (file) => `https://sql.js.org/dist/${file}`,
     })
       .then((SQL) => {
         (window as any).SQL = SQL;
         console.log("SQL.js initialized");
-        console.log(SQL);
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
 
-  const generateDeck = () => {
+  const generateDeck = async () => {
     try {
-      const flashcardGen = new FlashcardGenerator();
-  
-      // Using the provided mock data.
-      const listImageUrl = [
-        "https://cdn2.fabbon.com/uploads/article/image/1037/best-layered-haircuts.jpg",
+      const formData = new FormData();
+
+      // Extract audio files from the input ref
+      const audioFiles = audioInputRef.current?.files;
+      if (!audioFiles || audioFiles.length === 0) {
+        throw new Error("No audio files selected");
+      }
+
+      // Append audio files to the FormData
+      for (let i = 0; i < audioFiles.length; i++) {
+        formData.append("list_audio", audioFiles[i]);
+        console.log(audioFiles[i]);
+      }
+
+      // Append the other mocked data to the FormData
+      formData.append(
+        "list_image_url",
+        "https://cdn2.fabbon.com/uploads/article/image/1037/best-layered-haircuts.jpg"
+      );
+      formData.append(
+        "list_image_url",
         "https://m.media-amazon.com/images/G/32/social_share/amazon_logo._CB633267191_.png"
-      ];
-      const listSentence = [
-        "I need to cut my hair!",
-        "I love shopping on Amazon!"
-      ];
-      const listTranslation = [
-        "Eu preciso cortar meu cabelo!",
-        "Eu amo comprar na Amazon!"
-      ];
-      // I'm using placeholders for the audio URLs. You should replace these with actual URLs.
-      const listAudio = [
-        "path_or_url_to_audio1.ogg",
-        "path_or_url_to_audio2.ogg"
-      ];
-      const deckName = "deck_audio_teste14";
-      const nFlashcard = 2;
-  
-      flashcardGen.exportToAnki(deckName, listImageUrl, listSentence, listTranslation, listAudio, nFlashcard);
-  
-      console.log("Deck generated successfully!");
+      );
+      formData.append("list_sentence", "I need to cut my hair!");
+      formData.append("list_sentence", "I love shopping on Amazon!");
+      formData.append("list_translation", "Eu preciso cortar meu cabelo!");
+      formData.append("list_translation", "Eu amo comprar na Amazon!");
+      formData.append("deck_name", "deck_audio_teste14");
+      formData.append("n_flashcard", "2");
+
+      axios
+      .post("http://localhost:5000/converter", formData, {
+        responseType: "arraybuffer", // for receiving the file as a binary stream
+      })
+      .then((response) => {
+        // Create blob from received data
+        const blob = new Blob([response.data], { type: "application/octet-stream" });
+        const url = URL.createObjectURL(blob);
+        
+        // Create download link and click it to start download
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "deck_audio_teste14.apkg";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        alert("Deck created and download initiated!");
+      })
+      .catch((error) => {
+        alert(`API Error: ${error}}`);
+      });
     } catch (error) {
       console.log(error);
     }
   };
-  
 
   return (
     <div>
+      <label>Select audio files:</label>
+      <input type="file" ref={audioInputRef} multiple accept=".ogg" />
       <button onClick={generateDeck}>Generate Anki Deck</button>
     </div>
   );
